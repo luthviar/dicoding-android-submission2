@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/search"
+        android:icon="@drawable/ic_baseline_search_white_24px"
+        android:title="Cari"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="collapseActionView|always" />
+<!--    <group android:menuCategory="container">-->
+<!--        <item android:id="@+id/menu1"-->
+<!--            android:title="Menu satu"-->
+<!--            android:icon = "@drawable/ic_baseline_announcement_24"-->
+<!--            app:showAsAction="always" />-->
+<!--        <item android:id="@+id/menu2"-->
+<!--            android:title="Menu dua" />-->
+<!--    </group>-->
+</menu>
