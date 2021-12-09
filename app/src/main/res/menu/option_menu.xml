@@ -7,12 +7,16 @@
         android:title="Cari"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="collapseActionView|always" />
-<!--    <group android:menuCategory="container">-->
-<!--        <item android:id="@+id/menu1"-->
-<!--            android:title="Menu satu"-->
-<!--            android:icon = "@drawable/ic_baseline_announcement_24"-->
-<!--            app:showAsAction="always" />-->
+    <group android:menuCategory="container">
+        <item android:id="@+id/menu_favorite"
+            android:title="Menu Favorite"
+            android:icon = "@drawable/ic_favorite_24"
+            app:showAsAction="always" />
+        <item android:id="@+id/menu_theme"
+            android:title="Menu Tema"
+            android:icon = "@drawable/ic_change_theme_24"
+            app:showAsAction="always" />
 <!--        <item android:id="@+id/menu2"-->
 <!--            android:title="Menu dua" />-->
-<!--    </group>-->
+    </group>
 </menu>

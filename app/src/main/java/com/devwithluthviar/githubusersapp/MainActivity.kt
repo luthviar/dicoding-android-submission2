@@ -5,13 +5,19 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,9 +29,11 @@ import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
 
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
 class MainActivity : AppCompatActivity() {
     companion object {
-        const val TOKEN_AUTH_GITHUB = "token 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"
+        const val TOKEN_AUTH_GITHUB = "token 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"
     }
     private lateinit var rvHeroes: RecyclerView
     var usersResponse = ArrayList<User>()
@@ -37,14 +45,34 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
         rvHeroes = findViewById(R.id.rv_heroes)
         rvHeroes.setHasFixedSize(true)
-
-
         loading.startLoading()
-
         showUsers()
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        Handler().postDelayed({
+
+            val pref = SettingPreferences.getInstance(dataStore)
+            val mainViewModel = ViewModelProvider(this, ViewModelFactory(pref)).get(
+                MainViewModel::class.java
+            )
+
+            mainViewModel.getThemeSettings().observe(this,
+                { isDarkModeActive: Boolean ->
+                    if (isDarkModeActive) {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    } else {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    }
+                })
+        }, 1000)
+    }
+
 
     private fun showRecyclerList(listUserData: ArrayList<User> = ArrayList()) {
         if (applicationContext.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -71,6 +99,7 @@ class MainActivity : AppCompatActivity() {
     private fun showSelectedHero(user: User) {
         val detailUser = Intent(this@MainActivity, DetailUserActivity::class.java)
         detailUser.putExtra(DetailUserActivity.USER_DATA, user)
+        detailUser.putExtra(DetailUserActivity.IS_FROM_FAVORITE, false)
         startActivity(detailUser)
     }
 
@@ -199,6 +228,8 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     loading.isDismiss()
+
+
                 } catch (e: Exception) {
                     Toast.makeText(this@MainActivity, e.message, Toast.LENGTH_SHORT).show()
                     e.printStackTrace()
@@ -259,7 +290,38 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-        Log.d("onOptionsItemSelected", "onOptionsItemSelected")
+
+        when (item.itemId) {
+            R.id.menu_favorite -> {
+                Toast.makeText(this@MainActivity, "This is favorite page", Toast.LENGTH_SHORT).show()
+                val favoriteActivity = Intent(this@MainActivity, FavoriteActivity::class.java)
+                //detailUser.putExtra(DetailUserActivity.USER_DATA, user)
+                startActivity(favoriteActivity)
+                return true
+            }
+            R.id.menu_theme -> {
+
+                val pref = SettingPreferences.getInstance(dataStore)
+                val mainViewModel = ViewModelProvider(this, ViewModelFactory(pref)).get(
+                    MainViewModel::class.java
+                )
+                mainViewModel.getThemeSettings().observe(this,
+                    { isDarkModeActive: Boolean ->
+                        Log.d("valuedark", "${isDarkModeActive}")
+                        if (isDarkModeActive) {
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                            Toast.makeText(this@MainActivity, "Dark mode enable", Toast.LENGTH_SHORT).show()
+                            mainViewModel.saveThemeSetting(false)
+                        } else {
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                            Toast.makeText(this@MainActivity, "Dark mode disabled", Toast.LENGTH_SHORT).show()
+                            mainViewModel.saveThemeSetting(true)
+                        }
+                    })
+                return true
+            }
+        }
+        Log.d("onOptionsItemSelected", "onOptionsItemSelected ${item.toString()}")
         return true
     }
 }

@@ -69,7 +69,7 @@ class HomeFragment : Fragment() {
                         if(theListString == "") {
                             theListString = "<br/><br/><a href='https://github.com/${currentFollowerUsername}'>" + currentFollowerUsername + "</a>"
                         } else {
-                            theListString = theListString + ", " + "<a href='https://github.com/${currentFollowerUsername}'>" + currentFollowerUsername + "</a>"
+                            theListString = theListString + "<br/> " + "<a href='https://github.com/${currentFollowerUsername}'>" + currentFollowerUsername + "</a>"
                         }
                     }
                     if(datas.length() < 1) {
